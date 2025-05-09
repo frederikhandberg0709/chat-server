@@ -1,4 +1,4 @@
-package com.frederikhandberg.DTO;
+package com.frederikhandberg.dto;
 
 public record UserResponseDTO(
         Long id,
