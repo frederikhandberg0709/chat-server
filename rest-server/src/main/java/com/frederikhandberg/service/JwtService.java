@@ -12,6 +12,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import com.frederikhandberg.adapter.UserDetailsImpl;
+import com.frederikhandberg.exception.InvalidTokenException;
+import com.frederikhandberg.model.User;
+
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +28,10 @@ public class JwtService {
     private final KeyStoreManager keyStoreManager;
 
     @Value("${jwt.expiration.seconds:3600}")
-    private long expirationSeconds;
+    private long accessTokenExpirationSeconds;
+
+    @Value("${jwt.expiration.refresh:86400}")
+    private long refreshTokenExpirationSeconds;
 
     @Value("${jwt.issuer}")
     private String issuer;
@@ -32,7 +40,23 @@ public class JwtService {
         this.keyStoreManager = keyStoreManager;
     }
 
+    public String generateToken(User user) {
+        return generateToken(new UserDetailsImpl(user));
+    }
+
     public String generateToken(UserDetails userDetails) {
+        return generateToken(userDetails, accessTokenExpirationSeconds, TokenType.ACCESS);
+    }
+
+    public String generateRefreshToken(User user) {
+        return generateRefreshToken(new UserDetailsImpl(user));
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(userDetails, refreshTokenExpirationSeconds, TokenType.REFRESH);
+    }
+
+    public String generateToken(UserDetails userDetails, long expirationSeconds, TokenType tokenType) {
         KeyPair keyPair = keyStoreManager.getCurrentKeyPair();
 
         Date now = new Date();
@@ -61,14 +85,42 @@ public class JwtService {
         try {
             KeyPair keyPair = keyStoreManager.getCurrentKeyPair();
 
-            Jwts.parser()
+            Claims claims = Jwts.parser()
                     .verifyWith(keyPair.getPublic())
                     .build()
-                    .parseSignedClaims(token);
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String tokenType = claims.get("type", String.class);
+            if (TokenType.REFRESH.name().equals(tokenType)) {
+                throw new InvalidTokenException("Cannot use refresh token for authentication");
+            }
 
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             log.warn("Invalid JWT token: {}", e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean validateRefreshToken(String token) {
+        try {
+            KeyPair keyPair = keyStoreManager.getCurrentKeyPair();
+
+            Claims claims = Jwts.parser()
+                    .verifyWith(keyPair.getPublic())
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            String tokenType = claims.get("type", String.class);
+            if (!TokenType.REFRESH.name().equals(tokenType)) {
+                throw new InvalidTokenException("Not a refresh token");
+            }
+
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            log.warn("Invalid refresh token: {}", e.getMessage());
             return false;
         }
     }
@@ -83,4 +135,9 @@ public class JwtService {
                 .getPayload()
                 .getSubject();
     }
+}
+
+enum TokenType {
+    ACCESS,
+    REFRESH
 }
