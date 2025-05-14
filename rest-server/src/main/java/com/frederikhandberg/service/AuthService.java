@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.frederikhandberg.dto.AuthResponseDTO;
+import com.frederikhandberg.dto.LoginRequestDTO;
 import com.frederikhandberg.dto.RegisterRequestDTO;
 import com.frederikhandberg.dto.UserResponseDTO;
+import com.frederikhandberg.exception.InvalidCredentialsException;
 import com.frederikhandberg.exception.UserAlreadyExistsException;
 import com.frederikhandberg.model.User;
 import com.frederikhandberg.repository.UserRepository;
@@ -33,6 +35,10 @@ public class AuthService {
             throw new UserAlreadyExistsException("Email already registered");
         }
 
+        if (request.getPassword().length() < 8) {
+            throw new InvalidCredentialsException("Password must be at least 8 characters long");
+        }
+
         User user = new User();
         user.setUsername(request.getUsername());
         user.setEmail(request.getEmail());
@@ -49,6 +55,30 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(mapToUserResponseDTO(savedUser))
+                .build();
+    }
+
+    public AuthResponseDTO login(LoginRequestDTO request) {
+        User user = userRepository.findByUsernameOrEmail(
+                request.getUsernameOrEmail(),
+                request.getUsernameOrEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("Invalid login credentials provided."));
+
+        boolean isCorrectPassword = passwordEncoder.matches(
+                request.getPassword(),
+                user.getPassword());
+
+        if (!isCorrectPassword) {
+            throw new InvalidCredentialsException("Invalid login credentials provided.");
+        }
+
+        String accessToken = jwtService.generateToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
+
+        return AuthResponseDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserResponseDTO(user))
                 .build();
     }
 
