@@ -1,6 +1,7 @@
 package com.frederikhandberg.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.frederikhandberg.dto.AuthResponseDTO;
 import com.frederikhandberg.dto.LoginRequestDTO;
 import com.frederikhandberg.dto.RegisterRequestDTO;
+import com.frederikhandberg.dto.ResetPasswordRequestDTO;
 import com.frederikhandberg.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -47,5 +49,16 @@ public class AuthController {
     })
     public ResponseEntity<AuthResponseDTO> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @PatchMapping("/reset-password")
+    @Operation(summary = "Reset user password", description = "Reset the password for the user with the provided email or username")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Password reset successfully", content = @Content(schema = @Schema(implementation = AuthResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid input data"),
+            @ApiResponse(responseCode = "404", description = "User not found")
+    })
+    public ResponseEntity<AuthResponseDTO> resetPassword(@Valid @RequestBody ResetPasswordRequestDTO request) {
+        return ResponseEntity.ok(authService.resetPassword(request));
     }
 }

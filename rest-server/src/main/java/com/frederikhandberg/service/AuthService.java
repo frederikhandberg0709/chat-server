@@ -1,5 +1,7 @@
 package com.frederikhandberg.service;
 
+import java.time.LocalDateTime;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -7,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.frederikhandberg.dto.AuthResponseDTO;
 import com.frederikhandberg.dto.LoginRequestDTO;
 import com.frederikhandberg.dto.RegisterRequestDTO;
+import com.frederikhandberg.dto.ResetPasswordRequestDTO;
 import com.frederikhandberg.dto.UserResponseDTO;
 import com.frederikhandberg.exception.InvalidCredentialsException;
 import com.frederikhandberg.exception.UserAlreadyExistsException;
@@ -79,6 +82,29 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .user(mapToUserResponseDTO(user))
+                .build();
+    }
+
+    public AuthResponseDTO resetPassword(ResetPasswordRequestDTO request) {
+        User user = userRepository.findByUsernameOrEmail(request.getUsernameOrEmail(), request.getUsernameOrEmail())
+                .orElseThrow(() -> new InvalidCredentialsException("User does not exist."));
+
+        if (request.getNewPassword().length() < 8) {
+            throw new InvalidCredentialsException("Password must be at least 8 characters long");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        user.setPasswordLastChanged(LocalDateTime.now());
+
+        User savedUser = userRepository.save(user);
+
+        String accessToken = jwtService.generateToken(savedUser);
+        String refreshToken = jwtService.generateRefreshToken(savedUser);
+
+        return AuthResponseDTO.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .user(mapToUserResponseDTO(savedUser))
                 .build();
     }
 

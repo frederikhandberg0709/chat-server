@@ -65,6 +65,8 @@ public class User {
     @JsonIgnore
     private String password;
 
+    private LocalDateTime passwordLastChanged;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
