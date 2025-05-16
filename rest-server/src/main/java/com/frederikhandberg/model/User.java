@@ -37,6 +37,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
@@ -64,10 +65,14 @@ public class User {
     @JsonIgnore
     private String password;
 
+    private LocalDateTime passwordLastChanged;
+
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     private LocalDateTime updatedAt;
+
+    private LocalDateTime lastLoginAt;
 }

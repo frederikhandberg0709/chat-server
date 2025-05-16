@@ -1,8 +1,14 @@
 package com.frederikhandberg.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
-public record LoginRequestDTO(
-        @NotBlank String usernameOrEmail,
-        @NotBlank String password) {
+@Data
+public class LoginRequestDTO {
+
+        @NotBlank
+        private String usernameOrEmail;
+
+        @NotBlank
+        private String password;
 }

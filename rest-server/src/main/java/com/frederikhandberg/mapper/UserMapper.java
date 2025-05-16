@@ -16,10 +16,10 @@ public class UserMapper {
 
     public static User toEntity(RegisterRequestDTO dto, String encodedPassword) {
         User user = new User();
-        user.setUsername(dto.username());
-        user.setEmail(dto.email());
-        user.setFirstName(dto.firstName());
-        user.setLastName(dto.lastName());
+        user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
+        user.setFirstName(dto.getFirstName());
+        user.setLastName(dto.getLastName());
         user.setPassword(encodedPassword);
         return user;
     }
