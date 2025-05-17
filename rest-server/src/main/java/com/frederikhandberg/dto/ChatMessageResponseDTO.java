@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.frederikhandberg.model.ChatMessage;
 import com.frederikhandberg.model.User;
-import com.frederikhandberg.types.MessageType;
 
 import lombok.Data;
 
@@ -17,7 +16,6 @@ public class ChatMessageResponseDTO {
     private UserDTO receiver;
     private GroupChatDTO groupChat;
     private String content;
-    private MessageType messageType;
     private Set<UserDTO> readBy;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -26,10 +24,15 @@ public class ChatMessageResponseDTO {
     public ChatMessageResponseDTO(ChatMessage message, User currentUser) {
         this.id = message.getId();
         this.sender = new UserDTO(message.getSender());
-        this.receiver = message.getReceiver() != null ? new UserDTO(message.getReceiver()) : null;
-        this.groupChat = message.getGroupChat() != null ? new GroupChatDTO(message.getGroupChat()) : null;
+        if (message.getDirectChat() != null) {
+            User otherUser = message.getDirectChat().getOtherUser(currentUser);
+            this.receiver = otherUser != null ? new UserDTO(otherUser) : null;
+            this.groupChat = null;
+        } else if (message.getGroupChat() != null) {
+            this.receiver = null;
+            this.groupChat = new GroupChatDTO(message.getGroupChat());
+        }
         this.content = message.getContent();
-        this.messageType = message.getMessageType();
         this.readBy = message.getReadBy().stream()
                 .map(UserDTO::new)
                 .collect(Collectors.toSet());

@@ -3,7 +3,7 @@ package com.frederikhandberg.types;
 import lombok.Getter;
 
 @Getter
-public enum MessageType {
+public enum ChatType {
     DIRECT,
     GROUP
 }
