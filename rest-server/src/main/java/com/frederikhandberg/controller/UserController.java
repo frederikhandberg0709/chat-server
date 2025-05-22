@@ -16,6 +16,6 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<User> getUser(@PathVariable Long id) {
         return ResponseEntity.ok(new User(id, "John", "Doe", "johndoe", "test@mail.com", "password",
-                LocalDateTime.now(), LocalDateTime.now()));
+                LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now()));
     }
 }
