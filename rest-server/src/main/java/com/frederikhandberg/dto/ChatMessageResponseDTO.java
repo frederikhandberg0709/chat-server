@@ -9,6 +9,8 @@ import com.frederikhandberg.model.User;
 
 import lombok.Data;
 
+// This is an old DTO and should be removed when appropriate.
+
 @Data
 public class ChatMessageResponseDTO {
     private Long id;
