@@ -25,6 +25,10 @@ I will be building another server. Possibly a SignalR server to handle instant m
 
 6. As a user, I want to be able to edit my past messages, so that I can fix grammar mistakes or clarify what I meant.
 
+7. As a user, I want to be able to tag other users in my messages in group chats, so that they can easily see messages directed at them.
+
+8. As a user, I want to reply to specific messages in a chat, **so that** I can provide context and make conversations easier to follow.
+
 ## Product Backlog
 
 ### ✅ Implemented
@@ -44,3 +48,7 @@ I will be building another server. Possibly a SignalR server to handle instant m
 3. Block users
 
 4. Edit sent messages
+
+5. Tag users in group chats (e.g. `@username`)
+
+6. Reply to specific messages in chat (with quoted message context)
