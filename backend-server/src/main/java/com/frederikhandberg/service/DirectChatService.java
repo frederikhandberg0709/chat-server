@@ -8,8 +8,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.frederikhandberg.adapter.UserDetailsImpl;
 import com.frederikhandberg.dto.ChatMessageResponseDTO;
 import com.frederikhandberg.dto.DirectChatDTO;
 import com.frederikhandberg.dto.DirectChatMessageRequestDTO;
@@ -114,6 +117,8 @@ public class DirectChatService {
 
     // DIRECT MESSAGING
 
+    // public ChatMessageResponseDTO sendDirectMessage(User currentUser,
+    // DirectChatMessageRequestDTO messageRequest) {
     public ChatMessageResponseDTO sendDirectMessage(User currentUser, DirectChatMessageRequestDTO messageRequest) {
         DirectChat targetChat = resolveTargetChat(currentUser, messageRequest);
 

@@ -35,7 +35,8 @@ public class SecurityConfig {
                             "/v3/api-docs.yaml",
                             "/swagger-resources/**",
                             "/webjars/**",
-                            "/api/auth/**").permitAll()
+                            "/api/auth/**",
+                            "/ws/**").permitAll()
                             .requestMatchers(new AntPathRequestMatcher("/error")).permitAll()
                             .anyRequest().authenticated();
                 })
