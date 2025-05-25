@@ -24,3 +24,21 @@ I will be building another server. Possibly a SignalR server to handle instant m
 5. As a user, I want to be able to block other users, so that I can stop receiving messages from people I don't want to interact with.
 
 6. As a user, I want to be able to edit my past messages, so that I can fix grammar mistakes or clarify what I meant.
+
+## Product Backlog
+
+### ✅ Implemented
+
+1. As a user, I want to be able to create an account, so that I can send and receive messages.
+### 🚧 In Progress
+
+1. As a user, I want to be able to receive messages in real-time, so that I don’t miss any messages or need to reload the page.
+### 🔜 Planned
+
+1. As a user, I want to be able to react to messages with emojis, so that I can quickly express my feelings or feedback without having to type a response.
+
+2. As a user, I want to be able to delete my messages, so that I can remove messages I regret sending.
+
+3. As a user, I want to be able to block other users, so that I can stop receiving messages from people I don't want to interact with.
+
+4. As a user, I want to be able to edit my past messages, so that I can fix grammar mistakes or clarify what I meant.
