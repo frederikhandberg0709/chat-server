@@ -13,6 +13,8 @@ I will be building another server. Possibly a SignalR server to handle instant m
 
 ## Functional Requirements
 
+The functional requirements listed below define the core features the chat application should support.
+
 1. As a user, I want to be able to create an account, so that I can send and receive messages.
 
 2. As a user, I want to be able to receive messages in real-time, so that I don’t miss any messages or need to reload the page.
@@ -30,6 +32,15 @@ I will be building another server. Possibly a SignalR server to handle instant m
 8. As a user, I want to reply to specific messages in a chat, **so that** I can provide context and make conversations easier to follow.
 
 ## Product Backlog
+
+The product backlog lists features based on the functional requirements of the chat application.
+It is divided into three sections to reflect their development status:
+
+1. **Implemented:** Features from the functional requirements that are fully developed and working.
+
+2. **In Progress:** Features currently being developed or tested.
+
+3. **Planned:** Features identified from the functional requirements, but development not yet started.
 
 ### ✅ Implemented
 
