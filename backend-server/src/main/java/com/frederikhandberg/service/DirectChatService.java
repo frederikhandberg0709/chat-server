@@ -8,15 +8,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
-import com.frederikhandberg.adapter.UserDetailsImpl;
 import com.frederikhandberg.dto.ChatMessageResponseDTO;
 import com.frederikhandberg.dto.DirectChatDTO;
 import com.frederikhandberg.dto.DirectChatMessageRequestDTO;
-import com.frederikhandberg.exception.AccessDeniedException;
 import com.frederikhandberg.exception.ConflictException;
 import com.frederikhandberg.exception.ResourceNotFoundException;
 import com.frederikhandberg.model.ChatMessage;
@@ -117,8 +114,6 @@ public class DirectChatService {
 
     // DIRECT MESSAGING
 
-    // public ChatMessageResponseDTO sendDirectMessage(User currentUser,
-    // DirectChatMessageRequestDTO messageRequest) {
     public ChatMessageResponseDTO sendDirectMessage(User currentUser, DirectChatMessageRequestDTO messageRequest) {
         DirectChat targetChat = resolveTargetChat(currentUser, messageRequest);
 
@@ -180,7 +175,7 @@ public class DirectChatService {
         return chat.getOtherUser(currentUser);
     }
 
-    // PRIVATE HELPER METHODS - eliminates code duplication
+    // PRIVATE HELPER METHODS
 
     private DirectChat resolveTargetChat(User currentUser, DirectChatMessageRequestDTO messageRequest) {
         if (messageRequest.getDirectChatId() != null) {

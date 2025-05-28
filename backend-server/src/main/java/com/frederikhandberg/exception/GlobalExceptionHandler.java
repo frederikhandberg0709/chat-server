@@ -62,4 +62,28 @@ public class GlobalExceptionHandler {
                 errors);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<ErrorResponse> handleAuthentication(
+            org.springframework.security.core.AuthenticationException ex,
+            WebRequest request) {
+        log.error("Authentication failed:", ex);
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.UNAUTHORIZED.value(),
+                "Authentication required",
+                request.getDescription(false));
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(
+            org.springframework.security.access.AccessDeniedException ex,
+            WebRequest request) {
+        log.error("Access denied:", ex);
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.FORBIDDEN.value(),
+                ex.getMessage(),
+                request.getDescription(false));
+        return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+    }
 }
