@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import com.frederikhandberg.dto.ErrorResponse;
+import com.frederikhandberg.dto.ErrorResponseDTO;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, WebRequest request) {
+    public ResponseEntity<ErrorResponseDTO> handleAllExceptions(Exception ex, WebRequest request) {
         log.error("Unhandled exception:", ex);
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "An unexpected error occurred",
                 request.getDescription(false));
@@ -30,8 +30,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExistsException ex, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDTO> handleUserAlreadyExists(UserAlreadyExistsException ex, WebRequest request) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.CONFLICT.value(),
                 ex.getMessage(),
                 request.getDescription(false));
@@ -39,8 +39,9 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex, WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
+    public ResponseEntity<ErrorResponseDTO> handleInvalidCredentials(InvalidCredentialsException ex,
+            WebRequest request) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 ex.getMessage(),
                 request.getDescription(false));
@@ -48,7 +49,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+    public ResponseEntity<ErrorResponseDTO> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult().getAllErrors().forEach((error) -> {
             String fieldName = ((FieldError) error).getField();
@@ -56,7 +57,7 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
 
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.BAD_REQUEST.value(),
                 "Validation failed",
                 errors);
@@ -64,11 +65,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
-    public ResponseEntity<ErrorResponse> handleAuthentication(
+    public ResponseEntity<ErrorResponseDTO> handleAuthentication(
             org.springframework.security.core.AuthenticationException ex,
             WebRequest request) {
         log.error("Authentication failed:", ex);
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.UNAUTHORIZED.value(),
                 "Authentication required",
                 request.getDescription(false));
@@ -76,11 +77,11 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDenied(
+    public ResponseEntity<ErrorResponseDTO> handleAccessDenied(
             org.springframework.security.access.AccessDeniedException ex,
             WebRequest request) {
         log.error("Access denied:", ex);
-        ErrorResponse error = new ErrorResponse(
+        ErrorResponseDTO error = new ErrorResponseDTO(
                 HttpStatus.FORBIDDEN.value(),
                 ex.getMessage(),
                 request.getDescription(false));

@@ -12,9 +12,11 @@ import com.frederikhandberg.exception.AccessDeniedException;
 import com.frederikhandberg.model.User;
 import com.frederikhandberg.service.DirectChatService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Controller
+@Transactional
 @RequiredArgsConstructor
 public class DirectChatWebSocketController {
 

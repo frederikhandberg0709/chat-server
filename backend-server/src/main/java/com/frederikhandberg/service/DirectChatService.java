@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -114,12 +115,16 @@ public class DirectChatService {
 
     // DIRECT MESSAGING
 
+    @Transactional
     public ChatMessageResponseDTO sendDirectMessage(User currentUser, DirectChatMessageRequestDTO messageRequest) {
-        DirectChat targetChat = resolveTargetChat(currentUser, messageRequest);
+        User sender = userRepository.findById(currentUser.getId())
+                .orElseThrow(() -> new RuntimeException("Sender not found"));
+
+        DirectChat targetChat = resolveTargetChat(sender, messageRequest);
 
         ChatMessage message = new ChatMessage();
         message.setContent(messageRequest.getContent());
-        message.setSender(currentUser);
+        message.setSender(sender);
         message.setDirectChat(targetChat);
 
         log.info("Sending direct chat message by user ID {} to receiver ID {}",
@@ -127,7 +132,20 @@ public class DirectChatService {
 
         ChatMessage savedMessage = chatMessageRepository.save(message);
 
-        return new ChatMessageResponseDTO(savedMessage, currentUser);
+        if (savedMessage.getDirectChat() != null) {
+            Hibernate.initialize(savedMessage.getDirectChat());
+            Hibernate.initialize(savedMessage.getDirectChat().getUser1());
+            Hibernate.initialize(savedMessage.getDirectChat().getUser2());
+            Hibernate.initialize(savedMessage.getDirectChat().getMembers());
+        }
+
+        if (savedMessage.getGroupChat() != null) {
+            Hibernate.initialize(savedMessage.getGroupChat());
+        }
+
+        Hibernate.initialize(savedMessage.getReadBy());
+
+        return new ChatMessageResponseDTO(savedMessage, sender);
     }
 
     public List<ChatMessageResponseDTO> getDirectChatMessages(Long directChatId, User currentUser, int page, int size) {
