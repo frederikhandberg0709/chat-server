@@ -1,6 +1,8 @@
 package com.frederikhandberg.controller;
 
 import com.frederikhandberg.adapter.UserDetailsImpl;
+import com.frederikhandberg.dto.UserResponseDTO;
+import com.frederikhandberg.mapper.UserMapper;
 import com.frederikhandberg.model.User;
 import java.time.LocalDateTime;
 import org.springframework.http.HttpStatus;
@@ -19,13 +21,14 @@ public class UserController {
     public ResponseEntity<?> getCurrentUser(
         @AuthenticationPrincipal UserDetailsImpl userDetails
     ) {
-        User currentUser = userDetails.getUser();
-
-        if (currentUser == null) {
+        if (userDetails == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
-        return ResponseEntity.ok(currentUser);
+        User currentUser = userDetails.getUser();
+        UserResponseDTO userResponse = UserMapper.toDTO(currentUser);
+
+        return ResponseEntity.ok(userResponse);
     }
 
     @GetMapping("/{id}")
